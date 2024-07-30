@@ -36,7 +36,7 @@ class JSONWebTokenLoginHandler(BaseHandler):
         elif tokenParam:
            token = tokenParam
         else:
-           raise web.HTTPError(401)
+           self.redirect("https://wrds-www.wharton.upenn.edu/login")
 
         claims = "";
         if secret:
@@ -61,9 +61,9 @@ class JSONWebTokenLoginHandler(BaseHandler):
     def verify_jwt_with_claims(token, signing_certificate, audience):
         # If no audience is supplied then assume we're not verifying the audience field.
         if audience == "":
-            opts = {"verify_aud": False}
+            opts = {"verify_aud": False, "verify_exp": True, "verify_iat":True, "verify_nbf": True, "require": ["exp", "iat", "nbf"]}
         else:
-            opts = {}
+            opts = {"verify_exp": True, "verify_iat":True, "verify_nbf": True, "require": ["exp", "iat", "nbf"]}
         with open(signing_certificate, 'r') as rsa_public_key_file:
             return jwt.decode(token, rsa_public_key_file.read(), audience=audience, options=opts)
 
@@ -71,9 +71,9 @@ class JSONWebTokenLoginHandler(BaseHandler):
     def verify_jwt_using_secret(json_web_token, secret, audience):
         # If no audience is supplied then assume we're not verifying the audience field.
         if audience == "":
-            opts = {"verify_aud": False}
+            opts = {"verify_aud": False, "verify_exp": True, "verify_iat":True, "verify_nbf": True, "require": ["exp", "iat", "nbf"]}
         else:
-            opts = {}
+            opts = {"verify_exp": True, "verify_iat":True, "verify_nbf": True, "require": ["exp", "iat", "nbf"]}
         
         return jwt.decode(json_web_token, secret, algorithms=list(jwt.ALGORITHMS.SUPPORTED), audience=audience, options=opts)
 
