@@ -16,6 +16,7 @@ class JSONWebTokenLoginHandler(BaseHandler):
         auth_header_content = self.request.headers.get(header_name, "")
         auth_cookie_content = self.get_cookie("XSRF-TOKEN", "")
         signing_certificate = self.authenticator.signing_certificate
+        redirect_url = self.authenticator.wrds_login_redirect_url
         secret = self.authenticator.secret
         username_claim_field = self.authenticator.username_claim_field
         audience = self.authenticator.expected_audience
@@ -36,7 +37,7 @@ class JSONWebTokenLoginHandler(BaseHandler):
         elif tokenParam:
            token = tokenParam
         else:
-           self.redirect("https://wrds-www.wharton.upenn.edu/login")
+           self.redirect(redirect_url)
 
         claims = "";
         if secret:
@@ -94,12 +95,22 @@ class JSONWebTokenAuthenticator(Authenticator):
     """
     Accept the authenticated JSON Web Token from header.
     """
-    signing_certificate = Unicode(
+
+    wrds_login_redirect_url = Unicode(
         config=True,
         help="""
         The public certificate of the private key used to sign the incoming JSON Web Tokens.
 
         Should be a path to an X509 PEM format certificate filesystem.
+        """
+    )
+    
+    signing_certificate = Unicode(
+        config=True,
+        help="""
+        The ...
+
+        Should be a path to ...
         """
     )
 
